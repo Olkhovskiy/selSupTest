@@ -1,0 +1,40 @@
+package org.example;
+
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+
+public class CrptApi {
+    private TimeUnit unit;
+    private Integer requestLimit;
+
+    private final Semaphore SEMAPHORE;
+
+    public CrptApi(TimeUnit unit, Integer requestLimit) {
+        this.unit = unit;
+        this.requestLimit = requestLimit;
+        this.SEMAPHORE = new Semaphore(requestLimit, true);
+    }
+
+    public void create(Document doc, String sign) {
+        try {
+            SEMAPHORE.tryAcquire(requestLimit, unit);
+        } catch (InterruptedException e) {
+            System.out.println("Ошибка");
+        }
+        //бизнес логика
+        SEMAPHORE.release();
+    }
+
+    public class Document {
+        private Description description;
+        private String docId;
+        private String docStatus;
+        private String docType;
+        private Boolean importRequest;
+        private String ownerInn;
+    }
+
+    public class Description {
+        private String participantInn;
+    }
+}
